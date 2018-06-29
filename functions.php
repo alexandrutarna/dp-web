@@ -106,4 +106,21 @@ function get_user_id($connection, $username){
     return $user_id;
  }
 
+
+
+ function get_bookings($connection){
+    $result = $connection->query("SELECT * FROM bookings");
+    
+    if($result && $result->num_rows != 0) {
+        $rows = [];
+        while($row = $result->fetch_assoc())
+            $rows[] = $row;
+        return $rows;
+    }
+    return null;
+}
+
+
+
+
 ?>
