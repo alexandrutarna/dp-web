@@ -40,7 +40,15 @@ update_session_time();
 </head>
 
 <body>
-<noscript><h1 class="error">Your browser does not support JavaScript!</h1></noscript>
+
+<!-- Javascript Disabled Message -->
+<noscript>
+	<h4 class="error"> 
+		JavaScript is disabled in your browser! 
+		Some functionalities might not be available.
+	</h4>
+</noscript>
+<!-- --------------------------- -->
 
 <div id="wrapper">
 	<h1><?php if(isset($title)){ echo $title; }?></h1>

@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 
 session_start();
 // use only https
-if(empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on"){
+if(empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == "off"){
     $redirect = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     header('HTTP/1.1 301 Moved Permanently');
     header('Location: ' . $redirect);
@@ -11,9 +11,9 @@ if(empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on"){
 }
 
 // check if cookies are enabled
-if (!isset($_COOKIE['checkcookie'])){
-	setcookie('checkcookie', 'true', time()+3600);
-	header('Location: checkcookie.php?prev=https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+if (!isset($_COOKIE['shuttlecookie'])){
+	setcookie('shuttlecookie', 'true', time()+3600);
+	header('Location: checkcookies.php?prev_uri=https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
 }	
 
 // database
@@ -34,6 +34,6 @@ $pwd = 'sqlsql';
 $db = 's251897';
 */
 
-$title = 'Booking appointments';
+$title = 'Booking Shuttle';
 
 ?>
