@@ -41,3 +41,21 @@ max capacity = 4
 'AA' -> 'BB': total 2; user u1 (2 passengers)
 'BB' -> 'DD': total 3; user u1 (2 passengers), user u2 (1 passenger)
 'DD' -> 'EE': total 2; user u2 (1 passenger), user u3 (1 passenger)
+
+
+
+
+
+INSERT INTO `bookings`(`user_id`, `departure`, `destination`, `nr_passengers`) 
+VALUES 
+('u1@p.it', 'AA', 'DD', 2),
+('u2@p.it', 'BB', 'EE', 1),
+('u3@p.it', 'DD', 'EE', 1);
+
+
+INSERT INTO `bookings`(`user_id`, `departure`, `destination`, `nr_passengers`) 
+VALUES 
+(111, 'AA', 'DD', 2),
+(222, 'BB', 'EE', 1),
+(333, 'DD', 'EE', 1);
+

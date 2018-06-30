@@ -10,8 +10,77 @@ $connection = database_connect();
 $bookings = get_bookings($connection);
 
 
-if($bookings == null)
-	echo '<h3>There are no bookings</h3>';
+if($bookings == null){
+  echo '<h3>There are no bookings</h3>';
+
+    // array containing data
+    $array = array(
+      "u1@p.it" => 2,
+      "u2@p.it" => 1,
+      "u3@p.it" => 1
+   );
+  
+  $sqldata = serialize($array);
+  echo $sqldata;
+
+  echo '<br> <br>';
+  $items = unserialize($sqldata);
+
+  $keys = array_keys($items);
+  foreach($keys as $key) {
+
+    if ($key === "u1@p.it"){
+      echo '<b> user ' . $key .  ' ' . '(' . $items[$key] . ' ';
+      echo (($items[$key] === 1) ? 'passenger' : 'passengers' );
+      echo  ')' . ', </b>';
+    }
+else {
+    echo 'user ' . $key .  ' ' . '(' . $items[$key] . ' ';
+    echo (($items[$key] === 1) ? 'passenger' : 'passengers' );
+    echo ')' . ', ';
+}
+
+  }
+
+
+  echo '<br> <br>';
+  unset($array["u2@p.it"]);
+  $sqldata = serialize($array);
+  echo $sqldata;
+
+  echo '<br> <br>';
+  $items = unserialize($sqldata);
+
+  $keys = array_keys($items);
+  $total = 0;
+  foreach($keys as $key) {
+    $total += $items[$key];
+  }
+
+
+
+
+  echo '<br> <br>';
+  echo 'total ' . $total .': ';
+
+  foreach($keys as $key) {
+
+    if ($key === "u3@p.it"){
+      echo '<b> user ' . $key .  ' ' . '(' . $items[$key] . ' ';
+      echo (($items[$key] === 1) ? 'passenger' : 'passengers' );
+      echo  ')' . ', </b>';
+    }
+    else{
+    echo 'user ' . $key .  ' ' . '(' . $items[$key] . ' ';
+    echo (($items[$key] === 1) ? 'passenger' : 'passengers' );
+    echo  ')' . ', ';
+    }
+  }
+
+  // Empty string when using an empty array:
+  // var_dump(implode('hello', array())); // string(0) ""
+}
+
 else { // display all the bookings
   echo '<h3>Here are the bookings</h3>';
 

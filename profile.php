@@ -14,5 +14,7 @@ require('header.php');
 
 echo '<h3>Welcome to the booking <span class="username"> </span> !</h3></br>';
 
+echo 'UID:' . $_SESSION['uid'];
+
 require('footer.php'); 
 ?>

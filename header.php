@@ -33,7 +33,12 @@ update_session_time();
 		padding: 30px;
 		background-color: #ffffff;
 		min-height: 400px;
-	}
+}
+	
+b { 
+	font-weight: bold;
+	color: red;
+}
 	</style>
 
 
