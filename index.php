@@ -84,6 +84,19 @@ else {
 else { // display all the bookings
   echo '<h3>Here are the bookings</h3>';
 
+
+
+  class indexRow { 
+    public $departure = ''; 
+    public $destination = '';
+    public $total = 0; 
+    
+    // function aMemberFunc() { 
+    //     print 'Inside `aMemberFunc()`'; 
+    // } 
+}
+
+
   echo "<table border='1'>
       <tr>
       <th>user_id</th>
@@ -113,103 +126,107 @@ else { // display all the bookings
 
 echo '<br> <br>';
 
-$dep = array ();
-$dest = array ();
+// $dep = array ();
+// $dest = array ();
 
 
 
-foreach($bookings as $booking) {
+// foreach($bookings as $booking) {
 
-  $user_id = $booking['user_id'];
-  $departure = $booking['departure'];
-  $destination = $booking['destination'];
-  $nr_passengers = $booking['nr_passengers'];
+//   $departure = $booking['departure'];
+//   $destination = $booking['destination'];
 
-  $dep[$departure] = $departure;
-  $dest[$destination] = $destination;
-
-  // echo "<tr>";
-  // echo "<td>" . $user_id . "</td>";
-  // echo "<td>" . $departure . "</td>";
-  // echo "<td>" . $destination . "</td>";
-  // echo "<td>" . $nr_passengers . "</td>";
-  // echo "</tr>";
-
-  $arr = "";
-  foreach($bookings as $booking2 ){
-    $user_id2 = $booking2['user_id'];
-    $departure2 = $booking2['departure'];
-    $destination2 = $booking2['destination'];
-    $nr_passengers2 = $booking2['nr_passengers'];
+//   $dep[$departure] = $departure;
+//   $dest[$destination] = $destination;
+// }
 
 
-    if ($departure < $departure2 && $user_id != $user_id2){
-      echo $departure . '<br>';
-    }
-    // echo $user_id2 . '<br>';
-  }
+// $dep_str = implode("," , $dep);
+// echo 'departure: ' . $dep_str . '<br>';
 
-}
+// $dest_str = implode("," , $dest);
+// echo 'destination: ' . $dest_str . '<br>';
 
+// // create itinerary list
+// $itinerary = $dep + $dest;
+// sort($itinerary);
+// $itineray_str = implode("," , $itinerary);
 
-$dep_str = implode("," , $dep);
-echo 'departure: ' . $dep_str . '<br>';
-
-$dest_str = implode("," , $dest);
-echo 'departure: ' . $dest_str . '<br>';
-
-$itinerary = $dep + $dest;
-$itineray_str = implode("," , $itinerary);
-
-echo 'itinerary: ' . $itineray_str . '<br>';
+// echo 'itinerary: ' . $itineray_str . '<br>';
 
 
 
-echo '<br>';
-echo 'myDep' . '<br>';
-$i = 0;
-$myDep = array();
-foreach($itinerary as $point) {
-  echo $i . ' ' . $point . "<br>";
-  $myDep[$i] = $point;
-  $i++;
-}
+
+// echo '<br>';
+// // number of destination in the itineray 
+// $itinerary_length = count($itinerary)-1;
+// echo 'itinerary_length: ' . $itinerary_length . '<br>';
+
+// echo '<br>';
+// echo 'myDep' . '<br>';
+
+// $myDep = array();
+// $i = 0;
+// foreach($itinerary as $point) {
+//   // echo $i . ' ' . $point . "<br>";
+//   $myDep[$i] = $point;
+//   $i++;
+// }
 
 
-$i = 0;
-$myDest = array();
-$length = count($myDep)-1;
-foreach($myDep as $point) {
-  // echo $i . ' ' . $point . "<br>";
 
-  if ($i >= 0 && $i < $length){
-    // echo $i . ' ' . $myDep[$i+1] . "<br>";
-    $myDest[$i] = $myDep[$i+1];
-  }
-  else if ($i == $length)
-  {
-    $myDest[$i] = $myDep[$i-1];
-  }
+// $length = count($myDep)-1;
+// // unset($myDep[$length]);
 
-  $i++;
-}
+// $myDest = array();
+// $i = 0;
+// foreach($myDep as $point) {
 
-echo '<br>';
-echo 'myDest' . '<br>';
-$i = 0;
-foreach ($myDest as $dest){
-  echo $i . ' ' . $dest . "<br>";
-  $i++;
-}
+//   if ($i >= 0 && $i < $length){
+//     $myDest[$i] = $myDep[$i+1];
+//   }
+//   else 
+//     if ($i == $length) {
+//       $myDest[$i] = $myDep[$i-1];
+//     }
+//   $i++;
+// }
+
+// $dep_len = count($myDep)-1;
+// unset($myDep[$dep_len]);
+
+// $dep_str = implode("," , $myDep);
+// echo 'departure: ' . $dep_str . '<br>';
 
 
-echo 'length ' . $length . '<br>';
 
-$tmp = $myDep[$length];
-$myDep[$length] = $myDest[$length];
-$myDest[$length] = $tmp;
+// $dest_len = count($myDest)-1;
+// unset($myDest[$dest_len]);
 
-for ($i=0; $i< $length; $i++){
+// $dest_str = implode("," , $myDest);
+// echo 'destination: ' . $dest_str . '<br>';
+
+// echo '<br>';
+
+// echo 'length ' . $length . '<br>';
+
+
+
+$itn = get_itinerary($connection);
+
+$myDep = $itn['departures'];
+$myDest = $itn['destinations'];
+
+$dep_str = implode("," , $myDep);
+echo 'departures: ' . $dep_str . '<br>';
+
+$dest_str = implode("," , $myDest);
+echo 'destinations: ' . $dest_str . '<br>';
+
+$len_dep = count($myDep);
+echo 'len_dep ' . $len_dep . '<br>';
+
+for ($i=0; $i< $len_dep; $i++){
 
   echo $myDep[$i] . ' --> ' . $myDest[$i] . ' ';
 
@@ -228,22 +245,10 @@ for ($i=0; $i< $length; $i++){
     }
     
   }
-echo  'total: ' . $total . '<br>';
+  echo  'total: ' . $total . '<br>';
 }
 
 
-// $arr = "";
-// foreach($bookings as $booking ){
-//   $user_id = $booking['user_id'];
-//   $departure = $booking['departure'];
-//   $destination = $booking['destination'];
-//   $nr_passengers = $booking['nr_passengers'];
-
-//   if ($departure >= $myDep[$i] && $departure <= $mydest[$i]){
-//     echo $user_id . ' ' . $nr_passengers .  '<br>';
-//   }
-//   // echo $user_id2 . '<br>';
-// }
 
 
 }

@@ -109,7 +109,7 @@ function get_user_id($connection, $username){
 
 
  function get_bookings($connection){
-    $result = $connection->query("SELECT * FROM bookings order by departure, destination");
+    $result = $connection->query("SELECT * FROM bookings ");
     
     if($result && $result->num_rows != 0) {
         $rows = [];
@@ -120,7 +120,62 @@ function get_user_id($connection, $username){
     return null;
 }
 
+function get_itinerary($connection){
 
+    $bookings = get_bookings($connection);
+
+    $dep = array ();
+    $dest = array ();
+
+    foreach($bookings as $booking) {
+
+        $departure = $booking['departure'];
+        $destination = $booking['destination'];
+      
+        $dep[$departure] = $departure;
+        $dest[$destination] = $destination;
+      }
+
+    // create itinerary list
+    $itinerary = $dep + $dest;
+    sort($itinerary);
+
+    $myDep = array();
+    $i = 0;
+    foreach($itinerary as $point) {
+    // echo $i . ' ' . $point . "<br>";
+    $myDep[$i] = $point;
+    $i++;
+    }
+
+    $length = count($myDep)-1;
+    $myDest = array();
+    $i = 0;
+    foreach($myDep as $point) {
+    
+      if ($i >= 0 && $i < $length){
+        $myDest[$i] = $myDep[$i+1];
+      }
+      else 
+        if ($i == $length) {
+          $myDest[$i] = $myDep[$i-1];
+        }
+      $i++;
+    }
+
+    // remove last entries 
+    $dep_len = count($myDep)-1;
+    unset($myDep[$dep_len]);
+
+    $dest_len = count($myDest)-1;
+    unset($myDest[$dest_len]);
+
+    $result = array(
+        "departures" => $myDep,
+        "destinations" => $myDest
+     );
+    return $result;
+}
 
 
 ?>
