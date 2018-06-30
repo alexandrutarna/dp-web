@@ -59,3 +59,32 @@ VALUES
 (222, 'BB', 'EE', 1),
 (333, 'DD', 'EE', 1);
 
+INSERT INTO `bookings`(`user_id`, `departure`, `destination`, `nr_passengers`) 
+VALUES (555, 'BA', 'DF', 2)
+
+
+SELECT * FROM `bookings` b1 
+join `bookings`b2
+
+SELECT * FROM `bookings` b1
+WHERE b1.departure <= 'AM'
+
+SELECT sum(nr_passengers) FROM `bookings` b1
+WHERE b1.departure <= 'AM'
+group by user_id
+
+
+SELECT * FROM `bookings` b1 
+join `bookings`b2
+order by b1.departure, b2.destination 
+
+
+
+SELECT * FROM `bookings` b1 
+join `bookings`b2 
+where b1.departure < b2.departure
+group by b1.booking_id, b2.booking_id, b1.user_id, b2.user_id
+order by b1.departure, b2.destination
+
+
+

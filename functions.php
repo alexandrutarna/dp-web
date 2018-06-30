@@ -109,7 +109,7 @@ function get_user_id($connection, $username){
 
 
  function get_bookings($connection){
-    $result = $connection->query("SELECT * FROM bookings");
+    $result = $connection->query("SELECT * FROM bookings order by departure, destination");
     
     if($result && $result->num_rows != 0) {
         $rows = [];
