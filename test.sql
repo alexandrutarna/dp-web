@@ -73,6 +73,8 @@ SELECT sum(nr_passengers) FROM `bookings` b1
 WHERE b1.departure <= 'AM'
 group by user_id
 
+SELECT max(nr_passengers) FROM `bookings` 
+b1 WHERE b1.departure <= 'BA'
 
 SELECT * FROM `bookings` b1 
 join `bookings`b2

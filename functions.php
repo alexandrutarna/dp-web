@@ -106,7 +106,12 @@ function get_user_id($connection, $username){
     return $user_id;
  }
 
-
+ function get_username_by_id($connection, $uid){
+    $result = $connection->query("SELECT username FROM users WHERE uid = '$uid'");
+    $row = $result->fetch_assoc();
+    $username = $row['username'];
+    return $username;
+ }
 
  function get_bookings($connection){
     $result = $connection->query("SELECT * FROM bookings ");

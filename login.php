@@ -66,7 +66,7 @@ if(isset($_POST['submit'])) {
 							echo 'Password Matches !!!! LOGIN SUCCESS';
 
 							$user_id = get_user_id($connection, $username);
-							// login_user($user_id)
+							login_user($user_id);
 
 							// header('Location: profile.php');
 							// die();
