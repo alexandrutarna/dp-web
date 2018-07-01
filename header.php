@@ -39,6 +39,11 @@ b {
 	font-weight: bold;
 	color: red;
 }
+
+#book_ok{
+	font-weight: bold;
+	color: green;
+}
 	</style>
 
 

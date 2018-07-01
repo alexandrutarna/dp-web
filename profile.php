@@ -12,65 +12,182 @@ $title = "Profile";
 require('header.php'); 
 
 
-
-
 echo '<h3>Welcome to the booking <span class="username"> </span> !</h3></br>';
 
 echo 'UID:' . $_SESSION['uid'];
 
-$my_username = get_username_by_id($connection, $_SESSION['uid'])
-?>
+$my_username = get_username_by_id($connection, $_SESSION['uid']);
 
 
 
-<!-- HTML -->
-<form name = "book" action="profile.php" method="POST" onsubmit="return validateForm()">
-<p>
-  <label>Deparure:</label>
-  <input type="text" name="departure" maxlength="50" required="required"  placeholder="your departure point"><br />
-</p>
-<p>
-  <label>Destination: </label>
-  <input type="text" name="destination" maxlength="50" required="required" placeholder="your destination point"><br />	
-</p>
-<p>
-  <input class = "button" type="submit" value="Book Trip" name="submit" />
-</p>
-</form>
+if(isset($_POST['submit'])) {
+	if (!isset($_POST['departure']) || $_POST['departure'] === '')
+		$error[] = 'Invalid departure';
+	if (!isset($_POST['destination']) || $_POST['destination'] === '')
+		$error[] = 'Invalid destination';
+	
+	$rcvd_departure = sanitizeString($_POST['departure']);
+	$rcvd_departure = strtoupper($rcvd_departure);
+	$rcvd_destination = sanitizeString($_POST['destination']);
+	$rcvd_destination = strtoupper($rcvd_destination);
+	$rcvd_nr_passengers = sanitizeString($_POST['nr_passengers']);
 
-<!-- include JS -->
-<script type="text/javascript" src="jsfunctions.js"></script>
+	// echo $rcvd_departure . '<br>';
+	// echo $rcvd_destination . '<br>';
+	// echo $rcvd_nr_passengers . '<br>';
+
+	if ($rcvd_departure === '' || $rcvd_destination === ''){
+		echo "<b>Your itinerary is not valid!</b>" . '<br>';
+	}
+	else
+	{
+		//valid itinerary
 
 
+		if (create_booking($connection, $my_username, $rcvd_departure, $rcvd_destination, $rcvd_nr_passengers)){
+			// success
+			echo '<b id="book_ok">Booking confirmed!</b>' . '<br>';
+		}
+		else{
+			echo "<b>Booking failed! Try again.</b>" . '<br>';
+		}
 
-<?php
+
+		// if(!enough_places($connection, $rcvd_departure, $rcvd_destination, $rcvd_nr_passengers)){
+		// 	echo "<b>Booking failed! Not enough places.</b>" . '<br>';
+		// }
+		// else{
+		// 	echo '<b id="book_ok">Booking confirmed!</b>' . '<br>';
+			
+		// }
+
+	}
+
+	echo 'result is:' . enough_places($connection, $rcvd_departure, $rcvd_destination, $rcvd_nr_passengers);
+
+}
+
+
 // check if there are any bookings
 $bookings = get_bookings($connection);
 
-if($bookings == null){
-	echo '<h3>There are no bookings</h3>';
 
-}
-else
-{
+if($bookings == null ){
+	echo '<h3>There are no bookings</h3>  <br>' ;
+
+	?>
+
+	<!-- HTML -->
+	<form name = "book" action="profile.php" method="POST" onsubmit="return validateForm()">
+	<p>
+	  <label>Deparure:</label>
+	  <input type="text" name="departure" maxlength="50" required="required"  placeholder="your departure point"><br />
+	</p>
+	<p>
+	  <label>Destination: </label>
+	  <input type="text" name="destination" maxlength="50" required="required" placeholder="your destination point"><br />	
+	</p>
+	<p>
+		<label>Passengers: </label>
+		<input type="number" name="nr_passengers" maxlength="2" min="1" required="required" placeholder="number of passengers"><br />	
+	</p>
+	<p>
+	  <input class = "button" type="submit" value="Book Trip" name="submit" />
+	</p>
+	</form>
+	
+	<!-- include JS -->
+	<script type="text/javascript" src="jsfunctions.js"></script>
+
+
+	<?php
+	}   // end if bookings = null  
+
+	else
+	{   // if bookins is not null
+
+		// check if user has booked
+		$user_dep = '';
+		$user_dest = '';
+		$user_nr_passengers = '' ;
+		$has_booked = false;
+
+
+		foreach($bookings as $booking ){
+
+			$username = $booking['username'];
+			$departure = $booking['departure'];
+			$destination = $booking['destination'];
+			$nr_passengers = $booking['nr_passengers'];
+		
+			if ($my_username == $username){
+				$user_dep = $departure;
+				$user_dest = $destination;
+				$user_nr_passengers = $nr_passengers;
+				$has_booked = true;
+			}
+		}
+
+		$has_booked = false;
+		if($has_booked){
+
+			// echo $user_dep . '<br>';
+			// echo $user_dest . '<br>';
+			// echo $user_nr_passengers . '<br>';
+
+			echo "<table border='1'>
+			<tr>
+			<th>departure</th>
+			<th>destination</th>
+			<th>passengers</th>
+			</tr>";
+
+			echo "<td align='center'>" . $user_dep . "</td>";
+			echo "<td align='center'>" . $user_dest . "</td>";
+			echo "<td align='center'>" . $user_nr_passengers . "</td>";
+
+
+
+
+		}
+		
+		else {
+			// if not booked start
+			?>	
+		
+			<!-- HTML -->
+			<form name = "book" action="profile.php" method="POST" onsubmit="return validateForm()">
+			<p>
+			  <label>Deparure:</label>
+			  <input type="text" name="departure" maxlength="50" required="required"  placeholder="your departure point"><br />
+			</p>
+			<p>
+			  <label>Destination: </label>
+			  <input type="text" name="destination" maxlength="50" required="required" placeholder="your destination point"><br />	
+			</p>
+			<p>
+			  <label>Passengers: </label>
+			  <input type="number" name="nr_passengers" maxlength="2" min="1" required="required" placeholder="number of passengers"><br />	
+			</p>
+			<p>
+			  <input class = "button" type="submit" value="Book Trip" name="submit" />
+			</p>
+			</form>
+			
+			<!-- include JS -->
+			<script type="text/javascript" src="jsfunctions.js"></script>
+		
+		
+			<?php
+			} // else if not booked end
+
+
+
 
 
 	echo '<br> <br>';
 
 
-	foreach($bookings as $booking ){
-
-		$username = $booking['username'];
-		$departure = $booking['departure'];
-		$destination = $booking['destination'];
-		$nr_passengers = $booking['nr_passengers'];
-
-		if ($my_username == $username){
-			$user_dep = $departure;
-			$user_dest = $destination;
-			$has_booked = true;
-		}
-	}
 
 	$itn = get_itinerary($connection);
 

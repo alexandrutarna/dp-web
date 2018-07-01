@@ -16,6 +16,11 @@ if (!isset($_COOKIE['shuttlecookie'])){
 	header('Location: checkcookies.php?prev_uri=https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
 }	
 
+// maximum shuttle capacity
+$shuttleCapacity = 4;
+
+
+
 // database
 
 //local

@@ -1,7 +1,7 @@
 <?php
 require 'init.php';
 
-$shuttleCapacity = 4;
+
 
 // connect to database
 function database_connect() {
@@ -88,15 +88,12 @@ function password_matches($connection, $username, $password){
     $result = $connection->query("SELECT password FROM users WHERE username = '$username'");
     $row = $result->fetch_assoc();
     $passDB = $row['password'];
-    $md5_password = md5($password);
 
-    if($passDB === $md5_password)
+    if($passDB === md5($password))
         return true;
     else 
         return false;
  }
-
-
 
 
 function get_user_id($connection, $username){
@@ -123,6 +120,49 @@ function get_user_id($connection, $username){
         return $rows;
     }
     return null;
+}
+
+
+function create_booking( $connection, $username, $dep, $dest, $psg){
+
+    if(!enough_places($connection, $dep, $dest, $psg)){
+        return false;
+    }
+    else
+        {
+        $myQuery = "INSERT INTO  bookings(username, departure, destination, nr_passengers)
+         VALUES ('$username', '$dep', '$dest', $psg)";
+        $result = $connection->query($myQuery);
+
+        if(!$connection->commit()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+function enough_places($connection, $dep, $dest, $passengers){
+    global $shuttleCapacity;
+    $myQuery = "SELECT max(nr_passengers)  AS maximum  FROM  bookings 
+                WHERE departure >= '$dep' and destination <= '$dest' FOR UPDATE";
+    $result = $connection->query($myQuery);
+
+    if($result && $result->num_rows != 0) {
+        $rows = [];
+        while($row = $result->fetch_assoc())
+            $rows[] = $row;
+        
+        foreach($rows as $row){
+            $max = $row['maximum'];
+
+            if (($shuttleCapacity - $max) >= $passengers)
+                return true;
+            else
+                return false;  
+        }
+    }
+    return true;
 }
 
 function get_itinerary($connection){
