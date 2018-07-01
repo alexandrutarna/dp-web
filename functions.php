@@ -155,15 +155,15 @@ function enough_places($connection, $dep, $dest, $psg_nr){
 
             $max = get_max($connection, $dep, $dest);
 
-            echo '<br>';
-            echo ' tot ' . $i . ' ' . $total . '<br>';
-            echo ' max ' . $i . ' ' . $max . '<br>';
+            // echo '<br>';
+            // echo ' tot ' . $i . ' ' . $total . '<br>';
+            // echo ' max ' . $i . ' ' . $max . '<br>';
 
         if (($shuttleCapacity - $max) >= $psg_nr){
 
-            echo '<br> cap111' . $shuttleCapacity . '<br>';
-            echo $max . '<br>';
-            echo $psg_nr . '<br>'; 
+            // echo '<br> cap111' . $shuttleCapacity . '<br>';
+            // echo $max . '<br>';
+            // echo $psg_nr . '<br>'; 
         return true;
         }else
             return false;  
@@ -171,9 +171,9 @@ function enough_places($connection, $dep, $dest, $psg_nr){
 
     $max = get_max($connection, $dep, $dest);
     if (($shuttleCapacity - $max) >= $psg_nr){
-        echo '<br> cap 2222' . $shuttleCapacity . '<br>';
-        echo $max . '<br>';
-        echo $psg_nr . '<br>'; 
+        // echo '<br> cap 2222' . $shuttleCapacity . '<br>';
+        // echo $max . '<br>';
+        // echo $psg_nr . '<br>'; 
         return true;
 
     }
@@ -206,9 +206,9 @@ function compute_max_per_trip($connection, $rows, $dep, $dest, $psg){
                 if ($total>$max)
                     $max = $total;
             }
-            echo '<br>';
-            echo ' tot ' . $i . ' ' . $total . '<br>';
-            echo ' max ' . $i . ' ' . $max . '<br>';
+            // echo '<br>';
+            // echo ' tot ' . $i . ' ' . $total . '<br>';
+            // echo ' max ' . $i . ' ' . $max . '<br>';
         }
 
     }
@@ -290,7 +290,7 @@ function get_itinerary_for_booking($rows){
     // create itinerary list
     $itinerary = $dep + $dest;
     sort($itinerary);
-    echo implode (',', $itinerary);
+    // echo implode (',', $itinerary);
 
     $myDep = array();
     $i = 0;
@@ -404,13 +404,13 @@ function make_itinerary($connection, $rcv_dep, $rcv_dest){
 		$myDest = $itn['destinations'];
 	
 		$dep_str = implode("," , $myDep);
-		echo 'departures: ' . $dep_str . '<br>';
+		// echo 'departures: ' . $dep_str . '<br>';
 	
 		$dest_str = implode("," , $myDest);
-		echo 'destinations: ' . $dest_str . '<br>';
+		// echo 'destinations: ' . $dest_str . '<br>';
 	
 		$len_dep = count($myDep);
-		echo 'len_dep ' . $len_dep . '<br>';
+		// echo 'len_dep ' . $len_dep . '<br>';
 
 		// check if there are any bookings
 		$bookings = get_bookings($connection);     ////// TO BE REMOVED
@@ -434,25 +434,34 @@ function make_itinerary($connection, $rcv_dep, $rcv_dest){
 				if ( $myDep[$i] >= $rcvd_departure && $myDest[$i] <= $rcvd_destination){
 				$total += $nr_passengers;
 
-				echo '------- ' . $i . '<br>';
-				echo '$departure ' . $departure . '<br>';
-				echo '$myDep[$i] ' .  $myDep[$i]. '<br>';
-				echo '$destination ' . $destination . '<br>';
-				echo '$myDest[$i] ' . $myDest[$i] . '<br>';
-				echo '$rcvd_departure ' . $rcvd_departure. '<br>';
-				echo '$rcvd_destination ' . $rcvd_destination. '<br>';
+				// echo '------- ' . $i . '<br>';
+				// echo '$departure ' . $departure . '<br>';
+				// echo '$myDep[$i] ' .  $myDep[$i]. '<br>';
+				// echo '$destination ' . $destination . '<br>';
+				// echo '$myDest[$i] ' . $myDest[$i] . '<br>';
+				// echo '$rcvd_departure ' . $rcvd_departure. '<br>';
+				// echo '$rcvd_destination ' . $rcvd_destination. '<br>';
 
-				echo 'total ' . $total . '<br>';
+				// echo 'total ' . $total . '<br>';
 			}
 		}
 
 			if ($total > $max)
 				$max = $total;
 		}
-		echo 'max ' . $max . '<br>';
+		// echo 'max ' . $max . '<br>';
     }
     
     return $max;
+    }
+
+
+
+    function delete_booking_user($connection, $username) {
+        $result = $connection->query("DELETE FROM bookings WHERE username = '$username'");
+        if(!$result){
+            die('error dabatase delete booking');
+        }
     }
 
 

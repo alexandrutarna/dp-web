@@ -14,7 +14,7 @@ require('header.php');
 
 echo '<h3>Welcome to the booking <span class="username"> </span> !</h3></br>';
 
-echo 'UID:' . $_SESSION['uid'];
+// echo 'UID:' . $_SESSION['uid'];
 
 $my_username = get_username_by_id($connection, $_SESSION['uid']);
 
@@ -62,8 +62,16 @@ if(isset($_POST['submit'])) {
 
 		}  // ELSE
 
-	} // POST
+	} // POST  submit bookikng
 
+
+
+	if(isset($_POST['remove'])) {
+
+	echo '<h1> REMOVED </h1>';
+	delete_booking_user($connection, $my_username);
+		
+	}
 	// echo 'result is:' . enough_places($connection, $rcvd_departure, $rcvd_destination, $rcvd_nr_passengers);
 
 
@@ -129,27 +137,38 @@ if($bookings == null ){
 			}
 		}
 
-		$has_booked = false;
+	
 		if($has_booked){
 
 			// echo $user_dep . '<br>';
 			// echo $user_dest . '<br>';
 			// echo $user_nr_passengers . '<br>';
 
-			echo "<table border='1'>
-			<tr>
-			<th>departure</th>
-			<th>destination</th>
-			<th>passengers</th>
-			</tr>";
+			// echo "<table border='1'>
+			// <tr>
+			// <th>departure</th>
+			// <th>destination</th>
+			// <th>passengers</th>
+			// </tr>";
 
-			echo "<td align='center'>" . $user_dep . "</td>";
-			echo "<td align='center'>" . $user_dest . "</td>";
-			echo "<td align='center'>" . $user_nr_passengers . "</td>";
+			// echo "<td align='center'>" . $user_dep . "</td>";
+			// echo "<td align='center'>" . $user_dest . "</td>";
+			// echo "<td align='center'>" . $user_nr_passengers . "</td>";
+?>
 
 
 
+				<!-- HTML -->
+	<form name = "book" action="profile.php" method="POST" onsubmit="return validateForm()">
+			<p>
+			  <input class = "button" type="submit" value="Remove Booking" name="remove" />
+			</p>
+			</form>
+	</form>
+	<!-- include JS -->
+	<script type="text/javascript" src="jsfunctions.js"></script>
 
+<?php
 		}
 		
 		else {
@@ -196,13 +215,13 @@ if($bookings == null ){
 	$myDest = $itn['destinations'];
 
 	$dep_str = implode("," , $myDep);
-	echo 'departures: ' . $dep_str . '<br>';
+	// echo 'departures: ' . $dep_str . '<br>';
 
 	$dest_str = implode("," , $myDest);
-	echo 'destinations: ' . $dest_str . '<br>';
+	// echo 'destinations: ' . $dest_str . '<br>';
 
 	$len_dep = count($myDep);
-	echo 'len_dep ' . $len_dep . '<br>';
+	// echo 'len_dep ' . $len_dep . '<br>';
 		
 
 	echo "<table border='1'>
