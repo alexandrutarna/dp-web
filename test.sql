@@ -90,3 +90,4 @@ order by b1.departure, b2.destination
 
 
 
+SELECT * FROM bookings WHERE departure >= 'AA' and destination <= 'DD'

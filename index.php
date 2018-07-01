@@ -116,7 +116,6 @@ for ($i=0; $i< $len_dep; $i++){
 
   $total = 0;
   foreach($bookings as $booking ){
-    $user_id = $booking['user_id'];
     $departure = $booking['departure'];
     $destination = $booking['destination'];
     $nr_passengers = $booking['nr_passengers'];

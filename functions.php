@@ -142,9 +142,9 @@ function create_booking( $connection, $username, $dep, $dest, $psg){
 }
 
 
-function enough_places($connection, $dep, $dest, $passengers){
+function enough_places($connection, $dep, $dest, $psg_nr){
     global $shuttleCapacity;
-    $myQuery = "SELECT max(nr_passengers)  AS maximum  FROM  bookings 
+    $myQuery = "SELECT *  FROM  bookings 
                 WHERE departure >= '$dep' and destination <= '$dest' FOR UPDATE";
     $result = $connection->query($myQuery);
 
@@ -152,17 +152,67 @@ function enough_places($connection, $dep, $dest, $passengers){
         $rows = [];
         while($row = $result->fetch_assoc())
             $rows[] = $row;
-        
-        foreach($rows as $row){
-            $max = $row['maximum'];
 
-            if (($shuttleCapacity - $max) >= $passengers)
-                return true;
-            else
-                return false;  
-        }
+            $max = get_max($connection, $dep, $dest);
+
+            echo '<br>';
+            echo ' tot ' . $i . ' ' . $total . '<br>';
+            echo ' max ' . $i . ' ' . $max . '<br>';
+
+        if (($shuttleCapacity - $max) >= $psg_nr){
+
+            echo '<br> cap111' . $shuttleCapacity . '<br>';
+            echo $max . '<br>';
+            echo $psg_nr . '<br>'; 
+        return true;
+        }else
+            return false;  
     }
-    return true;
+
+    $max = get_max($connection, $dep, $dest);
+    if (($shuttleCapacity - $max) >= $psg_nr){
+        echo '<br> cap 2222' . $shuttleCapacity . '<br>';
+        echo $max . '<br>';
+        echo $psg_nr . '<br>'; 
+        return true;
+
+    }
+        
+    else 
+    return false;
+}
+
+
+function compute_max_per_trip($connection, $rows, $dep, $dest, $psg){
+
+    $max = 0;
+    $itn = get_itinerary_for_booking($rows);
+
+    $myDep = $itn['departures'];
+    $myDest = $itn['destinations'];
+
+    $len_dep = count($myDep);
+    for ($i=0; $i< $len_dep; $i++){
+        $total = 0;
+        foreach($rows as $row ){
+
+            echo implode(',', $row);
+            $departure = $row['departure'];
+            $destination = $row['destination'];
+            $nr_passengers = $row['nr_passengers'];
+    
+            if ($departure <= $myDep[$i] && $destination >= $myDest[$i]){
+                $total += $nr_passengers;
+                if ($total>$max)
+                    $max = $total;
+            }
+            echo '<br>';
+            echo ' tot ' . $i . ' ' . $total . '<br>';
+            echo ' max ' . $i . ' ' . $max . '<br>';
+        }
+
+    }
+    return $max;
 }
 
 function get_itinerary($connection){
@@ -221,6 +271,189 @@ function get_itinerary($connection){
      );
     return $result;
 }
+
+
+
+function get_itinerary_for_booking($rows){
+    $dep = array ();
+    $dest = array ();
+    
+    foreach($rows as $row) {
+
+        $departure = $row['departure'];
+        $destination = $row['destination'];
+      
+        $dep[$departure] = $departure;
+        $dest[$destination] = $destination;
+      }
+
+    // create itinerary list
+    $itinerary = $dep + $dest;
+    sort($itinerary);
+    echo implode (',', $itinerary);
+
+    $myDep = array();
+    $i = 0;
+    foreach($itinerary as $point) {
+    // echo $i . ' ' . $point . "<br>";
+    $myDep[$i] = $point;
+    $i++;
+    }
+
+    $length = count($myDep)-1;
+    $myDest = array();
+    $i = 0;
+    foreach($myDep as $point) {
+    
+      if ($i >= 0 && $i < $length){
+        $myDest[$i] = $myDep[$i+1];
+      }
+      else 
+        if ($i == $length) {
+          $myDest[$i] = $myDep[$i-1];
+        }
+      $i++;
+    }
+
+    // remove last entries 
+    $dep_len = count($myDep)-1;
+    unset($myDep[$dep_len]);
+
+    $dest_len = count($myDest)-1;
+    unset($myDest[$dest_len]);
+
+    $result = array(
+        "departures" => $myDep,
+        "destinations" => $myDest
+     );
+    return $result;
+}
+
+
+function make_itinerary($connection, $rcv_dep, $rcv_dest){
+
+    $bookings = get_bookings($connection);
+
+    $dep = array ();
+    $dest = array ();
+
+    foreach($bookings as $booking) {
+
+        $departure = $booking['departure'];
+        $destination = $booking['destination'];
+      
+        $dep[$departure] = $departure;
+        $dest[$destination] = $destination;
+      }
+
+
+      $dep[$rcv_dep] = $rcv_dep;
+      $dest[$rcv_dest] = $rcv_dest;
+
+
+      // create itinerary list
+    $itinerary = $dep + $dest;
+    sort($itinerary);
+
+    $myDep = array();
+    $i = 0;
+    foreach($itinerary as $point) {
+    // echo $i . ' ' . $point . "<br>";
+    $myDep[$i] = $point;
+    $i++;
+    }
+
+    $length = count($myDep)-1;
+    $myDest = array();
+    $i = 0;
+    foreach($myDep as $point) {
+    
+      if ($i >= 0 && $i < $length){
+        $myDest[$i] = $myDep[$i+1];
+      }
+      else 
+        if ($i == $length) {
+          $myDest[$i] = $myDep[$i-1];
+        }
+      $i++;
+    }
+
+    // remove last entries 
+    $dep_len = count($myDep)-1;
+    unset($myDep[$dep_len]);
+
+    $dest_len = count($myDest)-1;
+    unset($myDest[$dest_len]);
+
+    $result = array(
+        "departures" => $myDep,
+        "destinations" => $myDest,
+        "itinerary" => $itinerary
+     );
+    return $result;
+    }
+
+
+
+
+    function get_max($connection, $rcvd_departure, $rcvd_destination){
+
+        $itn = make_itinerary($connection, $rcvd_departure, $rcvd_destination);
+
+		$myDep = $itn['departures'];
+		$myDest = $itn['destinations'];
+	
+		$dep_str = implode("," , $myDep);
+		echo 'departures: ' . $dep_str . '<br>';
+	
+		$dest_str = implode("," , $myDest);
+		echo 'destinations: ' . $dest_str . '<br>';
+	
+		$len_dep = count($myDep);
+		echo 'len_dep ' . $len_dep . '<br>';
+
+		// check if there are any bookings
+		$bookings = get_bookings($connection);     ////// TO BE REMOVED
+
+		$max = 0;
+		for ($i=0; $i< $len_dep; $i++){
+		
+		$total = 0;
+		foreach($bookings as $booking ){
+
+			$username = $booking['username'];
+			$departure = $booking['departure'];
+			$destination = $booking['destination'];
+			$nr_passengers = $booking['nr_passengers'];
+	
+
+			// if ( ($departure <= $myDep[$i]) && ($destination >= $myDest[$i]) ){
+
+			if ( $departure <= $myDep[$i] && $destination >= $myDest[$i] ){
+
+				if ( $myDep[$i] >= $rcvd_departure && $myDest[$i] <= $rcvd_destination){
+				$total += $nr_passengers;
+
+				echo '------- ' . $i . '<br>';
+				echo '$departure ' . $departure . '<br>';
+				echo '$myDep[$i] ' .  $myDep[$i]. '<br>';
+				echo '$destination ' . $destination . '<br>';
+				echo '$myDest[$i] ' . $myDest[$i] . '<br>';
+				echo '$rcvd_departure ' . $rcvd_departure. '<br>';
+				echo '$rcvd_destination ' . $rcvd_destination. '<br>';
+
+				echo 'total ' . $total . '<br>';
+			}
+		}
+
+			if ($total > $max)
+				$max = $total;
+		}
+		echo 'max ' . $max . '<br>';
+    }
+    
+    return $max;
+    }
 
 
 ?>

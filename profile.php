@@ -18,8 +18,8 @@ echo 'UID:' . $_SESSION['uid'];
 
 $my_username = get_username_by_id($connection, $_SESSION['uid']);
 
-
-
+$rcvd_departure = '';
+$rcvd_destination = '';
 if(isset($_POST['submit'])) {
 	if (!isset($_POST['departure']) || $_POST['departure'] === '')
 		$error[] = 'Invalid departure';
@@ -32,11 +32,12 @@ if(isset($_POST['submit'])) {
 	$rcvd_destination = strtoupper($rcvd_destination);
 	$rcvd_nr_passengers = sanitizeString($_POST['nr_passengers']);
 
-	// echo $rcvd_departure . '<br>';
-	// echo $rcvd_destination . '<br>';
-	// echo $rcvd_nr_passengers . '<br>';
+	echo $rcvd_departure . '<br>';
+	echo $rcvd_destination . '<br>';
+	echo $rcvd_nr_passengers . '<br>';
 
-	if ($rcvd_departure === '' || $rcvd_destination === ''){
+	if ($rcvd_departure === '' || $rcvd_destination === ''
+		|| $rcvd_departure >= $rcvd_destination ){
 		echo "<b>Your itinerary is not valid!</b>" . '<br>';
 	}
 	else
@@ -53,19 +54,19 @@ if(isset($_POST['submit'])) {
 		}
 
 
-		// if(!enough_places($connection, $rcvd_departure, $rcvd_destination, $rcvd_nr_passengers)){
-		// 	echo "<b>Booking failed! Not enough places.</b>" . '<br>';
-		// }
-		// else{
-		// 	echo '<b id="book_ok">Booking confirmed!</b>' . '<br>';
-			
-		// }
 
-	}
+		// $x = get_max($connection, $rcvd_departure, $rcvd_destination) ;
+		// echo 'maaaaaax - ' . $x;  
 
-	echo 'result is:' . enough_places($connection, $rcvd_departure, $rcvd_destination, $rcvd_nr_passengers);
 
-}
+
+		}  // ELSE
+
+	} // POST
+
+	// echo 'result is:' . enough_places($connection, $rcvd_departure, $rcvd_destination, $rcvd_nr_passengers);
+
+
 
 
 // check if there are any bookings
